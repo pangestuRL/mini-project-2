@@ -9,8 +9,12 @@ function Login () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [errorEmail, setErrorEmail] = useState("");
+    const [errorPassword, setErrorPassword] = useState("");
     const [message, setMessage] = useState("");
     const [user, setUser] = useState(null);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [loading, setLoading] = useState(false); 
 
     const navigate = useNavigate();
 
@@ -24,8 +28,39 @@ function Login () {
         setPassword(e.target.value);
     }
 
+    const isValidForm = () => {
+        let isValid = true;
+        
+        if (!email) {
+            setErrorEmail("email is required!");
+            isValid = false;
+        } else {
+            setErrorEmail("");
+        }
+
+        if (!password) {
+            setErrorPassword("password is required!");
+            isValid = false;
+        } else {
+            setErrorPassword("");
+        }
+        return isValid;
+    }
+
     const handleSignIn = () => {
-        console.log("email = "+email);
+        setLoading(true);
+        let isValid = isValidForm();
+
+        if (!isValid) {
+            setTimeout(() => {
+                setErrorPassword("");
+                setErrorEmail("");
+              }, 500);
+              return;
+        }
+        
+        
+        
         const payload = {
             email : email,
             password : password,
@@ -38,27 +73,32 @@ function Login () {
             const token = res.data.token;
             localStorage.setItem("accessToken", token);
             localStorage.setItem("email", email);
-            setMessage("Login berhasil!");
-            
-
-            setTimeout(()=> {
-                navigate("/");
-            }, 1000);
-            // alert("Welcome " + payload.email);
+            if(token){
+                setShowSuccess(true);
+                setMessage("Login berhasil!");
+                setTimeout(()=> {
+                    setShowSuccess(false);
+                    navigate("/");
+                }, 500);
+            }
         })
         .catch(err => {
             console.log("gagal", err.response);
-            // setMessage(err.response.data.message);
-            setError(err.response.data.message);
-            // alert(`Login gagal!\nStatus: ${err.response.data.message}`);
+            setError(true);
+            setTimeout(() => {
+                setError(false);
+            },1000)
+        })
+        .finally(() => {
+            setLoading(false);
         })
     }
 
     const handleGoogleLogin = async () => {
-        const provider = new GoogleAuthProvider(); // Gunakan Google sebagai metode login
+        const provider = new GoogleAuthProvider(); 
         try {
           const result = await signInWithPopup(auth, provider);
-          setUser(result.user); // Simpan data user setelah login
+          setUser(result.user);
           console.log("User logged in:", result.user);
         } catch (error) {
           console.error("Login failed:", error);
@@ -72,9 +112,21 @@ function Login () {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-sky-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
                 <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
                 <div className="max-w-md mx-auto">
+                    
                     <div>
                         <h1 className="text-2xl font-semibold">Login</h1>
                     </div>
+                    {showSuccess && (
+                        <div className="mt-2 p-3 bg-green-500 text-white flex justify-center rounded-md">
+                        Login Berhasil
+                        </div>
+                    )}
+                    {error && (
+                        <div className="mt-2 p-3 bg-red-600 text-white flex justify-center rounded-md">
+                        incorrect email or password
+                        </div>
+
+                    )}
                     <div className="divide-y divide-gray-200">
                         <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
                             <div className="relative">
@@ -93,7 +145,7 @@ function Login () {
                                 >
                                     Email Address
                                 </label>
-                                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                                {errorEmail && <p className="text-red-500 text-sm mt-2">{errorEmail}</p>}
                             </div>
                             <div className="relative">
                                 <input
@@ -104,6 +156,7 @@ function Login () {
                                     className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600"
                                     placeholder="Password"
                                     onChange={handleChangePassword}
+                                    required
                                 />
                                 <label
                                     htmlFor="password"
@@ -111,11 +164,11 @@ function Login () {
                                 >
                                     Password
                                 </label>
-                                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                                {errorPassword && <p className="text-red-500 text-sm mt-2">{errorPassword}</p>}
                             </div>
                             <div className="relative">
-                                <button className="bg-cyan-500 text-white rounded-md px-2 py-1" onClick={handleSignIn}>
-                                    Sign In
+                                <button disabled={loading} className="bg-cyan-500 text-white rounded-md px-2 py-1" onClick={handleSignIn}>
+                                    {loading?  "Loading..." : "Sign in"}
                                 </button>
                             </div>
                             <div>

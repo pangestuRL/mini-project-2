@@ -6,7 +6,30 @@ function Register () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [errorEmail, setErrorEmail] = useState("");
+    const [errorPassword, setErrorPassword] = useState("");
+    const [showSuccess, setShowSuccess] = useState(false); 
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const isValidForm = () => {
+        let isValid = true;
+        
+        if (!email) {
+            setErrorEmail("email is required!");
+            isValid = false;
+        } else {
+            setErrorEmail("");
+        }
+
+        if (!password) {
+            setErrorPassword("password is required!");
+            isValid = false;
+        } else {
+            setErrorPassword("");
+        }
+        return isValid;
+    }
 
     const handleChangeEmail = e => {
         console.log(e.target.value);
@@ -19,6 +42,18 @@ function Register () {
     }
 
     const handleRegister = () => {
+        setLoading(true);
+
+        let isValid = isValidForm();
+        if (!isValid) {
+            setTimeout(() => {
+                setErrorPassword("");
+                setErrorEmail("");
+              }, 500);
+              return;
+        }
+        
+
         console.log("email = "+email);
         const payload = {
             email : email,
@@ -29,15 +64,23 @@ function Register () {
         .post("https://reqres.in/api/register", payload)
         .then(res => {
             console.log("berhasil", res);
+            setShowSuccess(true);
             setMessage("Register berhasil!");
 
             setTimeout(()=> {
+                setShowSuccess(false);
                 navigate("/login");
-            }, 1000)
+            }, 500)
         })
         .catch(err => {
             console.log("Register gagal", err.response);
-            setMessage(err.response.data.message);
+            setMessage(true);
+            setTimeout(() => {
+                setMessage(false);
+            },1000)
+        })
+        .finally(() => {
+            setLoading(false);
         })
     }
 
@@ -50,6 +93,16 @@ function Register () {
                     <div>
                         <h1 className="text-2xl font-semibold">SignUp</h1>
                     </div>
+                    {showSuccess && (
+                        <div className="mt-2 p-3 bg-green-500 text-white flex justify-center rounded-md">
+                        Register Berhasil
+                        </div>
+                    )}
+                    {message && (
+                        <div className="mt-2 p-3 bg-red-800 text-white flex justify-center rounded-md">
+                        Register gagal
+                        </div>
+                    )}
                     <div className="divide-y divide-gray-200">
                         <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
                             <div className="relative">
@@ -84,6 +137,7 @@ function Register () {
                                 >
                                     Your Email
                                 </label>
+                                {errorEmail && <p className="text-red-500 text-sm mt-2">{errorEmail}</p>}
                             </div>
                             <div className="relative">
                                 <input
@@ -101,10 +155,11 @@ function Register () {
                                 >
                                     Password
                                 </label>
+                                {errorPassword && <p className="text-red-500 text-sm mt-2">{errorPassword}</p>}
                             </div>
                             <div className="relative">
-                                <button className="bg-cyan-500 text-white rounded-md px-2 py-1" onClick={handleRegister}>
-                                    Register
+                                <button DISABLED={loading} className="bg-cyan-500 text-white rounded-md px-2 py-1" onClick={handleRegister}>
+                                    {loading? "Loading..." : "Register"}
                                 </button>
                             </div>
                             <div>

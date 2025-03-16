@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Logo from "../navbar/assets/icon-logo.png";
 
@@ -7,6 +7,9 @@ const Navbar = () => {
     const token = localStorage.getItem("accessToken");
     const username = localStorage.getItem("email");
     const navigate = useNavigate();
+    const location = useLocation()
+
+    const navbarBg = location.pathname === "/" ? "bg-[#E6F6FE]" : "bg-white"
 
     const handleLogout = () => {
         localStorage.clear();
@@ -19,7 +22,7 @@ const Navbar = () => {
 
 
     return (
-        <div className="flex justify-between items-center lg:mt-10 lg:mx-20 bg-[#E6F6FE] p-5 rounded-lg">
+        <div className={`flex justify-between items-center lg:mx-20 ${navbarBg} p-5 rounded-lg`}>
             <Link to="/">
                 <div className="flex flex-row">
                     <img src={Logo} alt="Logo" className=""/>
