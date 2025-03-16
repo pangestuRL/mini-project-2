@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../../components/navbar";
 import Breadcrumb from "../../components/Bread Crumb";
+import Footer from "../../components/footer";
 
 
 function SpecialistDetail () {
@@ -29,7 +30,7 @@ function SpecialistDetail () {
         <div className="bg-[#E6F6FE] mt-0 h-[600px]">
             <Navbar/>
             <Breadcrumb/>
-            <div className=" flex flex-wrap md:mx-20 mt-10 py-12 px-10 bg-white shadow-lg rounded-xl">
+            <div className=" flex flex-wrap md:mx-20 mt-10 mb-12 py-12 px-10 bg-white shadow-lg rounded-xl">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
                     <img className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-blue-500 shadow-lg" src={specialist.avatar} alt="personal-photo"/>
                     <div className="text-center md:text-left">
@@ -50,10 +51,9 @@ function SpecialistDetail () {
                         all of our dental restoration and Invisalign impressions. Dr Williams is a strong advocate for using 
                         microsurgical techniques, this means less discomfort and faster healing times.</p>
                 </div>
-                </div>
-                
-                
+                </div>    
             </div>
+            <Footer/>
         </div>
     )
 }
