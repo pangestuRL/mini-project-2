@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Logo from "../navbar/assets/icon-logo.png";
+// import Logo from "../navbar/assets/icon-logo.png";
 
 const Navbar = () => {
     console.log(localStorage);
@@ -22,10 +22,10 @@ const Navbar = () => {
 
 
     return (
-        <div className={`flex justify-between items-center lg:mx-20 ${navbarBg} p-5 rounded-lg`}>
+        <div data-testid="navbar" role="navigation" className={`flex justify-between items-center lg:mx-20 ${navbarBg} p-5 rounded-lg`}>
             <Link to="/">
                 <div className="flex flex-row">
-                    <img src={Logo} alt="Logo" className=""/>
+                    <img alt="Logo" className=""/>
                     <p className="font-bold text-3xl ml-3">ArDental</p>
                 </div>
                 
